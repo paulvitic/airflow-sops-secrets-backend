@@ -9,7 +9,7 @@ setup(
     url='',
     license='MIT',
     author='Paul Vitic',
-    scripts=['test.py'],
+    scripts=[],
     include_package_data=True,
     author_email='p.vitic@comatch.com',
     description='An Airflow custom secrets backend for sops encrypted resources in gcs bucket',
