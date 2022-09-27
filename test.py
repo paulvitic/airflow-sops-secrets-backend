@@ -1,4 +1,4 @@
-from secret_manager import GcsSopsSecretsBackend
+from gcs_sops_secrets_backend import GcsSopsSecretsBackend
 manager = GcsSopsSecretsBackend(bucket_name='europe-west1-cm-staging-com-01ae7fff-bucket')
 conn = manager.get_connection(conn_id="here")
 if not conn:

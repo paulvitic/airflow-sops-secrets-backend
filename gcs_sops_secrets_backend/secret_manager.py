@@ -13,9 +13,10 @@ from airflow.models.connection import Connection
 
 from ruamel.yaml import YAML
 
-import sops
 import io
 import logging
+import sops
+
 
 log = logging.getLogger(__name__)
 
