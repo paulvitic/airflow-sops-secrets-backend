@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-from gcs_sops_secrets_backend import __version__
+from airflow_secrets_backend import __version__
 
 setup(
-    name='airflow-gcs-sops-secrets-backend',
+    name='airflow-secrets-sops',
     version=__version__,
-    packages=find_packages(where="./gcs_sops_secrets_backend"),
+    packages=find_packages(),
     url='',
     license='MIT',
     author='Paul Vitic',
