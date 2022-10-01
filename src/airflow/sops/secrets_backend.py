@@ -72,24 +72,6 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
             return conn
         return None
 
-    def get_connections(self, conn_id: str) -> List['Connection']:
-        """
-        Return connection object with a given ``conn_id``.
-
-        :param conn_id: connection id
-        :type conn_id: str
-        """
-        self.log.warning(
-            "This method is deprecated. Please use "
-            "`airflow.secrets.base_secrets.BaseSecretsBackend.get_connection`.",
-            PendingDeprecationWarning,
-            stacklevel=2,
-        )
-        conn = self.get_connection(conn_id=conn_id)
-        if conn:
-            return [conn]
-        return []
-
     def get_conn_uri(self, conn_id: str) -> Optional[str]:
         conn = self.get_connection(conn_id)
         if conn:
