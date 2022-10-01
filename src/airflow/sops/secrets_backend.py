@@ -2,7 +2,12 @@ import atexit
 import io
 import sops
 
-from typing import Optional, Dict
+from os import environ
+from typing import TYPE_CHECKING, Dict, Optional
+
+if TYPE_CHECKING:
+    # Avoid circular import problems when instantiating the backend during configuration.
+    from airflow.models.connection import Connection
 
 from google.cloud import storage
 from google.cloud.kms import KeyManagementServiceClient, DecryptRequest
@@ -12,6 +17,9 @@ from airflow.providers.google.cloud.secrets.secret_manager import CloudSecretMan
 from airflow.models.connection import Connection
 
 from ruamel.yaml import YAML
+
+# Composer environment key for bucket name.
+BUCKET_NAME = environ.get('GCS_BUCKET')
 
 
 class GcsSopsSecretsBackend(CloudSecretManagerBackend):
@@ -43,7 +51,9 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
         self.ignore_mac = ignore_mac
 
         if not self.bucket_name or self.bucket_name == "":
-            raise AirflowException("Bucket name must be provided")
+            self.bucket_name = BUCKET_NAME
+            if not self.bucket_name or self.bucket_name == "":
+                raise AirflowException("Bucket name not found")
 
         self.storage_client = storage.Client(project=self.project_id)
         self.kms_client = KeyManagementServiceClient()

@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='airflow-secrets-sops',
-      version='0.0.1',
+      version='0.0.2',
       packages=['airflow.sops'],
       package_dir={'': 'src'},
       python_requires='>=3.8',
