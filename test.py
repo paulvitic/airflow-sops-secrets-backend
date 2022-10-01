@@ -1,5 +1,5 @@
-# from .airflow_sops import GcsSopsSecretsBackend
-from src.airflow_secrets_backend.gcp_kms import GcsSopsSecretsBackend
+from src.airflow_sops.secrets_backend import GcsSopsSecretsBackend
+#from airflow_sops.secrets_backend import GcsSopsSecretsBackend
 
 manager = GcsSopsSecretsBackend(bucket_name='europe-west1-cm-staging-com-01ae7fff-bucket')
 conn = manager.get_connection(conn_id="here")
