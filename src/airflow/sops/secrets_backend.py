@@ -4,9 +4,9 @@ import sops
 
 from os import environ
 from typing import TYPE_CHECKING, Dict, Optional
-
 if TYPE_CHECKING:
     # Avoid circular import problems when instantiating the backend during configuration.
+    # See: https://github.com/apache/airflow/pull/25810/files/44399b7a3ccf151afa469367dd9319107138218a
     from airflow.models.connection import Connection
 
 from google.cloud import storage
@@ -14,7 +14,6 @@ from google.cloud.kms import KeyManagementServiceClient, DecryptRequest
 
 from airflow.exceptions import AirflowException
 from airflow.providers.google.cloud.secrets.secret_manager import CloudSecretManagerBackend
-from airflow.models.connection import Connection
 
 from ruamel.yaml import YAML
 
@@ -65,9 +64,10 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
         self.storage_client.close()
         self.kms_client.transport.close()
 
-    def get_connection(self, conn_id: str) -> Optional[Connection]:
+    def get_connection(self, conn_id: str) -> Optional['Connection']:
         file_obj = self._download_blob_to_stream('{}/{}.enc.yaml'.format(self.connections_prefix, conn_id))
         conn_dict = self._decrypt_yaml(file_obj, ignore_mac=self.ignore_mac)
+        from airflow.models.connection import Connection
         if conn_dict:
             conn = Connection(conn_id=conn_id, **conn_dict)
             return conn
