@@ -1,10 +1,8 @@
 import atexit
 import io
-import logging
 import sops
 
-from os import environ
-from typing import Optional, List, Dict
+from typing import Optional, Dict
 
 from google.cloud import storage
 from google.cloud.kms import KeyManagementServiceClient, DecryptRequest
@@ -14,11 +12,6 @@ from airflow.providers.google.cloud.secrets.secret_manager import CloudSecretMan
 from airflow.models.connection import Connection
 
 from ruamel.yaml import YAML
-
-log = logging.getLogger(__name__)
-
-# Composer environment key for bucket name.
-BUCKET_NAME = environ.get('GCS_BUCKET')
 
 
 class GcsSopsSecretsBackend(CloudSecretManagerBackend):
@@ -50,9 +43,7 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
         self.ignore_mac = ignore_mac
 
         if not self.bucket_name or self.bucket_name == "":
-            self.bucket_name = BUCKET_NAME
-            if not self.bucket_name or self.bucket_name == "":
-                raise AirflowException("Bucket name not found")
+            raise AirflowException("Bucket name must be provided")
 
         self.storage_client = storage.Client(project=self.project_id)
         self.kms_client = KeyManagementServiceClient()
@@ -95,7 +86,7 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
         blob.download_to_file(file_obj)
         file_obj.seek(0)
 
-        log.info(f"Downloaded blob {source_blob_name} to file-like object.")
+        self.log.info(f"Downloaded blob {source_blob_name} to file-like object.")
 
         return file_obj
 
@@ -142,7 +133,7 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
             except KeyError:
                 continue
             if 'resource_id' not in entry or entry['resource_id'] == "":
-                log.warning("WARN: KMS resource id not found skipping entry %s" % i)
+                self.log.warning("WARN: KMS resource id not found skipping entry %s" % i)
                 continue
 
             try:
@@ -153,9 +144,9 @@ class GcsSopsSecretsBackend(CloudSecretManagerBackend):
                 continue
             return response.plaintext
 
-        log.warning("WARN: no KMS client could be accessed:")
+        self.log.warning("WARN: no KMS client could be accessed:")
         for err in errors:
-            log.warning("* %s" % err)
+            self.log.warning("* %s" % err)
         return None
 
 
