@@ -5,7 +5,6 @@ pip install -r requirements.txt
 ```
 
 ## Build
-
 ```shell
 pip install build
 python -m build
