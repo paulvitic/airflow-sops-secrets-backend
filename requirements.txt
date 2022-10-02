@@ -1,6 +1,7 @@
 # Airflow 2.2.3 python 3.7 constraints
 # https://raw.githubusercontent.com/apache/airflow/constraints-2.2.3/constraints-3.7.txt
 apache-airflow==2.2.3
-apache-airflow-providers-google==6.2.0
-sops==1.18
+google-cloud-kms==2.10.1
+google-cloud-storage==1.43.0
+ruamel.yaml==0.17.21
 markupsafe==2.0.1
