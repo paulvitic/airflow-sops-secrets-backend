@@ -157,7 +157,8 @@ setup(
                 "twine",
                 "keyrings.google-artifactregistry-auth",
                 "wheel"],
-        "test": ["python-dotenv"],
+        "test": ["python-dotenv",
+                 "pytest"],
     },
 
     # If there are data files included in your packages that need to be
