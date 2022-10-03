@@ -9,6 +9,7 @@ locals {
   gcp_project_id = "your-project-id"
   service_account_name = "your-composer-service-account-name"
 }
+
 resource "google_service_account" "composer" {
   account_id   = local.service_account_name
   display_name = local.service_account_name
