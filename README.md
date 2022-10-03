@@ -69,12 +69,11 @@ pip install -r requirements.txt
 
 ## Test
 ```shell
-pip install . airflow-sops-secrets-backend[test] pytest
+pip install . airflow-sops-secrets-backend[test]
 pytest
 ```
 or 
 ```shell
-pip install . airflow-sops-secrets-backend[test] 
 python -m unittest tests/test_integration.py
 ```
 
@@ -91,8 +90,8 @@ python -m twine upload --repository-url https://europe-west1-python.pkg.dev/cm-b
 ```
 
 ## SOPS
-Encrypt files and upload to GCP bucket sops/connections directory
+Encrypt files with SOPS and upload to GCP bucket sops/connections directory
 ```shell
-export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring cm-secrets --project cm-secrets | awk 'FNR == 2 {print $1}')
+export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring your-keyring --project your-gcp-project | awk 'FNR == 2 {print $1}')
 sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH some-connection.yaml > some-connection.enc.yaml
 ```
