@@ -152,11 +152,12 @@ setup(
     # Similar to `install_requires` above, these must be valid existing
     # projects.
     extras_require={  # Optional
-         "dev": ["build",
-                 "twine",
-                 "keyrings.google-artifactregistry-auth",
-                 "wheel"],
-         "test": ["python-dotenv"],
+        "dev": ["setuptools >= 40.8.0",
+                "build",
+                "twine",
+                "keyrings.google-artifactregistry-auth",
+                "wheel"],
+        "test": ["python-dotenv"],
     },
 
     # If there are data files included in your packages that need to be

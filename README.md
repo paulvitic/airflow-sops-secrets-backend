@@ -44,8 +44,6 @@ resource "google_composer_environment" "composer" {
   name     = "your-composer-environment-name"
   region   = "europe-west1"
   project  = local.gcp_project_id
-  provider = google-beta
-
   config {
     software_config {
       airflow_config_overrides = {
@@ -55,7 +53,6 @@ resource "google_composer_environment" "composer" {
         airflow-secrets-sops                   = "==0.0.1"
       }
     }
-    
     node_config {
       service_account = google_service_account.composer.email
     }
