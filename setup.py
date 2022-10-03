@@ -29,7 +29,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="airflow-secrets-sops",  # Required
+    name="airflow-sops-secrets-backend",  # Required
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
@@ -40,7 +40,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="A airflow secrets backend with sops",  # Optional
+    description="A airflow_sops secrets backend with sops",  # Optional
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
@@ -128,7 +128,7 @@ setup(
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. See
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires="~=3.8",
+    python_requires=">=3.8, <4",
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
@@ -137,9 +137,9 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/discussions/install-requires-vs-requirements/
     install_requires=[
-        "apache-airflow==2.2.3",
-        "google-cloud-kms==2.10.1",
-        "google-cloud-storage==1.43.0",
+        "apache-airflow>=2.2.3",
+        "google-cloud-kms>=2.10.1",
+        "google-cloud-storage>=1.43.0",
         "ruamel.yaml>=0.17.21",
         "markupsafe==2.0.1"],  # Optional
 

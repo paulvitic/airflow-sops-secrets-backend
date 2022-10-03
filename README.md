@@ -47,7 +47,7 @@ resource "google_composer_environment" "composer" {
   config {
     software_config {
       airflow_config_overrides = {
-        secrets-backend                          = "airflow.sops.GcsSopsSecretsBackend"
+        secrets-backend                          = "airflow_sops.secrets_backend.GcsSopsSecretsBackend"
       }
       pypi_packages = {
         airflow-secrets-sops                   = "==0.0.1"
@@ -63,29 +63,30 @@ resource "google_composer_environment" "composer" {
 ## Setup
 ```shell
 source .env/bin/activate
+pip config set --site global.extra-index-url https://pypi.org/simple
 pip install -r requirements.txt
 ```
 
 ## Test
 ```shell
-pip install . airflow-secrets-sops[test] pytest
+pip install . airflow-sops-secrets-backend[test] pytest
 pytest
 ```
 or 
 ```shell
-pip install . airflow-secrets-sops[test]
+pip install . airflow-sops-secrets-backend[test] 
 python -m unittest tests/test_integration.py
 ```
 
 ## Build & Push
 ```shell
-pip install airflow-secrets-sops[dev]
+pip install airflow-sops-secrets-backend[dev]
 python -m build
 ```
 this builds the project then to push (to private GCP artifact registry)
 ```shell
 python setup.py bdist_wheel
-pip config set global.index-url https://_json_key_base64:***gcp_registry_writer_service_account_key***@europe-west1-python.pkg.dev/cm-build/comatch-python/simple/
+pip config set --site global.index-url https://_json_key_base64:***gcp_registry_writer_service_account_key***@europe-west1-python.pkg.dev/cm-build/comatch-python/simple/
 python -m twine upload --repository-url https://europe-west1-python.pkg.dev/cm-build/comatch-python/ dist/*
 ```
 

@@ -2,7 +2,7 @@ import unittest
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from airflow.sops import GcsSopsSecretsBackend
+from airflow_sops.secrets_backend import GcsSopsSecretsBackend
 
 env_path = Path('.')/'tests'/'.env'
 load_dotenv(dotenv_path=env_path)
