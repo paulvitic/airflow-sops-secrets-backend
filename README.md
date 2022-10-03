@@ -1,19 +1,29 @@
+# Airflow SOPS Secrets Backend for GCP KMS
+
 ## Setup
 ```shell
 source .env/bin/activate
 pip install -r requirements.txt
 ```
 
-## Build
+## Test
 ```shell
-pip install build
-python -m build
+pip install . airflow-secrets-sops[test] pytest
+pytest
+```
+or 
+```shell
+pip install . airflow-secrets-sops[test]
+python -m unittest tests/test_integration.py
 ```
 
-## Push
-To GCP artifact registry
+## Build & Push
 ```shell
-pip install twine keyrings.google-artifactregistry-auth wheel
+pip install airflow-secrets-sops[dev]
+python -m build
+```
+this builds the project then to push (to private GCP artifact registry)
+```shell
 python setup.py bdist_wheel
 pip config set global.index-url https://_json_key_base64:***gcp_registry_writer_service_account_key***@europe-west1-python.pkg.dev/cm-build/comatch-python/simple/
 python -m twine upload --repository-url https://europe-west1-python.pkg.dev/cm-build/comatch-python/ dist/*

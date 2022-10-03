@@ -1,1 +1,1 @@
-from .secrets_backend import GcsSopsSecretsBackend
+from.secrets_backend import GcsSopsSecretsBackend
