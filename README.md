@@ -93,8 +93,8 @@ python -m twine upload --repository-url https://europe-west1-python.pkg.dev/cm-b
 ```
 
 ## SOPS
-Encrypt
+Encrypt files and upload to GCP bucket sops/connections directory
 ```shell
 export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring cm-secrets --project cm-secrets | awk 'FNR == 2 {print $1}')
-sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH here.yaml > here.enc.yaml
+sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH some-connection.yaml > some-connection.enc.yaml
 ```
