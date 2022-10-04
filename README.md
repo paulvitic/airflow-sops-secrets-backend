@@ -1,7 +1,22 @@
 # Airflow SOPS Secrets Backend for GCP KMS
 This packages enables Airflow to pull connections and variables
-from files in GCP bucket that are encrypted by SOPS using GCP
-KMS.
+from files in GCP bucket that are encrypted by [SOPS](https://github.com/mozilla/sops) 
+using GCP KMS.
+
+## Configure Airflow
+Add following to *airflow.cfg*.
+```text
+[secrets]
+backend = airflow_sops.secrets_backend.GcsSopsSecretsBackend
+backend_kwargs = {"project_id": "your-project-id"}
+```
+Available parameters to backend_kwargs:
+* project_id: Optional. GCP project id where the GCS bucket which holds the encrypted connections/variables files reside., 
+* bucket_name: Optional. If not submitted tries retrieving from Composer GCS_BUCKET environment variable 
+* connections_prefix. Optional. Default is "sops/connections". The folder in GCS bucket that holds encrypted connections.
+* variables_prefix: Optional. Default is "sops/variables". The folder in GCS bucket that holds encrypted variables., 
+* encrypted_file_ext: Optional. Default is "enc". The file extension for encrypted sops files. The format is <connection_id or variable_key>.<encrypted_file_ext>.yaml
+* ignore_mac: Optional. Default is True. Ignores file checksum when true.
 
 ## GCP Config
 ```terraform
@@ -78,20 +93,15 @@ or
 python -m unittest tests/test_integration.py
 ```
 
-## Build & Push
+## Build
 ```shell
 pip install airflow-sops-secrets-backend[dev]
 python -m build
 ```
-this builds the project then to push (to private GCP artifact registry)
-```shell
-python setup.py bdist_wheel
-pip config set --site global.index-url https://_json_key_base64:***gcp_registry_writer_service_account_key***@europe-west1-python.pkg.dev/cm-build/comatch-python/simple/
-python -m twine upload --repository-url https://europe-west1-python.pkg.dev/cm-build/comatch-python/ dist/*
-```
 
 ## SOPS
-Encrypt files with SOPS and upload to GCP bucket sops/connections directory
+Install [SOPS](https://github.com/mozilla/sops). Encrypt files
+using GCP KMS and upload to GCP bucket sops/connections directory
 ```shell
 export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring your-keyring --project your-gcp-project | awk 'FNR == 2 {print $1}')
 sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH some-connection.yaml > some-connection.enc.yaml

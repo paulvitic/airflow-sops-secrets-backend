@@ -65,8 +65,7 @@ setup(
     # This should be a valid link to your project's main homepage.
     #
     # This field corresponds to the "Home-Page" metadata field:
-    # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url="https://github.com/pvitic/airflow-sops-secrets-backend",  # Optional
+    url="https://github.com/paulvitic/airflow-sops-secrets-backend",  # Optional
 
     # This should be your name or the name of the organization which owns the
     # project.
@@ -192,9 +191,8 @@ setup(
     # issues, where the source is hosted, where to say thanks to the package
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
-    # project_urls={  # Optional
-    #     "Bug Reports": "https://github.com/pypa/sampleproject/issues",
-    #     "Funding": "https://donate.pypi.org",
-    #     "Source": "https://github.com/pypa/sampleproject/",
-    # },
+    project_urls={  # Optional
+         "Bug Reports": "https://github.com/paulvitic/airflow-sops-secrets-backend/issues",
+         "Source": "https://github.com/paulvitic/airflow-sops-secrets-backend",
+    },
 )
