@@ -165,6 +165,6 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
         return None
 
     def _cleanup(self):
-        self.log.info("closing")
+        self.log.debug("closing")
         self.storage_client.close()
         self.kms_client.transport.close()
