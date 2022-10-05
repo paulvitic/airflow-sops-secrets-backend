@@ -76,9 +76,18 @@ resource "google_composer_environment" "composer" {
 }
 ```
 
+## SOPS
+Install [SOPS](https://github.com/mozilla/sops). Encrypt files
+using GCP KMS and upload to GCP bucket sops/connections directory
+```shell
+export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring your-keyring --project your-gcp-project | awk 'FNR == 2 {print $1}')
+sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH some-connection.yaml > some-connection.enc.yaml
+```
+
 ## Setup
 ```shell
-source .env/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip config set --site global.extra-index-url https://pypi.org/simple
 pip install -r requirements.txt
 ```
@@ -88,21 +97,9 @@ pip install -r requirements.txt
 pip install . airflow-sops-secrets-backend[test]
 pytest
 ```
-or 
-```shell
-python -m unittest tests/test_integration.py
-```
 
 ## Build
 ```shell
 pip install airflow-sops-secrets-backend[dev]
 python -m build
-```
-
-## SOPS
-Install [SOPS](https://github.com/mozilla/sops). Encrypt files
-using GCP KMS and upload to GCP bucket sops/connections directory
-```shell
-export KMS_PATH=$(gcloud kms keys list --location europe-west1 --keyring your-keyring --project your-gcp-project | awk 'FNR == 2 {print $1}')
-sops --encrypt --encrypted-regex '^(password|extra)$' --gcp-kms $KMS_PATH some-connection.yaml > some-connection.enc.yaml
 ```
