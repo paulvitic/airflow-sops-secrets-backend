@@ -86,8 +86,12 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
         return None
 
     def get_variable(self, key: str) -> Optional[str]:
-        stream = self._download_to_stream("{}/{}.{}".format(self.variables_prefix, key, self.file_ext))
-        var_dict = self._decrypt_stream(stream, ignore_mac=self.ignore_mac)
+        """variables are not encrypted. the variable is downloaded and passed as is."""
+        stream = self._download_to_stream("{}/{}.{}".format(self.variables_prefix,
+                                                            key, self.file_ext))
+        yaml = YAML(typ='safe', pure=True)
+        tree = yaml.load(stream)
+        var_dict = dict(tree)
         if var_dict and var_dict.get("value"):
             return var_dict["value"]
         return None
