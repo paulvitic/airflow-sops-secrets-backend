@@ -30,15 +30,17 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
             self,
             project_id: Optional[str] = None,
             bucket_name: str = None,
-            connections_prefix: str = "sops/connections",
-            variables_prefix: str = "sops/variables",
+            root_folder_name: str = "sops",
+            connections_folder_name: str = "connections",
+            variables_file_name: str = "variables",
             encrypted_file_ext: str = "enc",
             ignore_mac: bool = True):
         super().__init__()
         self.project_id = project_id
         self.bucket_name = bucket_name
-        self.connections_prefix = connections_prefix
-        self.variables_prefix = variables_prefix
+        self.root_folder_name = root_folder_name
+        self.connections_folder_name = connections_folder_name
+        self.variables_file_name = variables_file_name
         self.encrypted_file_ext = encrypted_file_ext
         self.ignore_mac = ignore_mac
 
@@ -71,7 +73,8 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
         atexit.register(self._cleanup)
 
     def get_connection(self, conn_id: str) -> Optional['Connection']:
-        stream = self._download_to_stream("{}/{}.{}".format(self.connections_prefix, conn_id, self.file_ext))
+        stream = self._download_to_stream("{}/{}/{}.{}".format(
+            self.root_folder_name, self.connections_folder_name, conn_id, self.file_ext))
         conn_dict = self._decrypt_stream(stream, ignore_mac=self.ignore_mac)
         from airflow.models.connection import Connection
         if conn_dict:
@@ -87,13 +90,13 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
 
     def get_variable(self, key: str) -> Optional[str]:
         """variables are not encrypted. the variable is downloaded and passed as is."""
-        stream = self._download_to_stream("{}/{}.{}".format(self.variables_prefix,
-                                                            key, self.file_ext))
+        stream = self._download_to_stream("{}/{}.{}".format(
+            self.root_folder_name, self.variables_file_name, YAML_FILE_EXT))
         yaml = YAML(typ='safe', pure=True)
         tree = yaml.load(stream)
         var_dict = dict(tree)
-        if var_dict and var_dict.get("value"):
-            return var_dict["value"]
+        if var_dict and var_dict.get(key):
+            return var_dict[key]
         return None
 
     def _download_to_stream(self, source_blob_name):
@@ -112,7 +115,7 @@ class GcsSopsSecretsBackend(BaseSecretsBackend, LoggingMixin):
         tree = yaml.load(file_obj)
         key, tree = self._get_key(tree)
         _check_rotation_needed(tree)
-        tree = _walk_and_decrypt(tree, key, ignoreMac=ignore_mac)
+        tree = _walk_and_decrypt(tree, key, ignore_mac=ignore_mac)
         if tree:
             tree.pop('sops', None)
             return dict(tree)
