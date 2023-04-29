@@ -36,7 +36,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="0.0.2",  # Required
+    version="0.0.4",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -140,7 +140,7 @@ setup(
         "google-cloud-kms>=2.10.1",
         "google-cloud-storage>=1.43.0",
         "ruamel.yaml>=0.17.21",
-        "markupsafe==2.0.1"],  # Optional
+        "markupsafe>=2.0.1"],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

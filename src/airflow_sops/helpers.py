@@ -83,7 +83,7 @@ def _check_rotation_needed(tree):
 
 
 def _walk_list_and_decrypt(branch, key, aad=b'', stash=None, digest=None,
-                           unencrypted=False):
+                           unencrypted=False, encrypted_regex=None):
     """Walk a list contained in a branch and decrypts its values."""
     nstash = dict()
     kl = []
@@ -93,12 +93,12 @@ def _walk_list_and_decrypt(branch, key, aad=b'', stash=None, digest=None,
             nstash = stash[i]
         if isinstance(v, MutableMapping):
             kl.append(_walk_and_decrypt(v, key, aad=aad, stash=nstash,
-                                        digest=digest, isRoot=False,
-                                        unencrypted=unencrypted))
+                                        digest=digest, is_root=False,
+                                        unencrypted=unencrypted, encrypted_regex=encrypted_regex))
         elif isinstance(v, MutableSequence):
             kl.append(_walk_list_and_decrypt(v, key, aad=aad, stash=nstash,
                                              digest=digest,
-                                             unencrypted=unencrypted))
+                                             unencrypted=unencrypted, encrypted_regex=encrypted_regex))
         else:
             kl.append(_decrypt(v, key, aad=aad, stash=nstash, digest=digest,
                                unencrypted=unencrypted))
@@ -106,15 +106,20 @@ def _walk_list_and_decrypt(branch, key, aad=b'', stash=None, digest=None,
 
 
 def _walk_and_decrypt(branch, key, aad=b'', stash=None, digest=None,
-                      isRoot=True, ignoreMac=False, unencrypted=False):
+                      is_root=True, ignore_mac=False, unencrypted=False, encrypted_regex=None):
     """Walk the branch recursively and decrypt leaves."""
-    if isRoot and not ignoreMac:
-        digest = hashlib.sha512()
+    if is_root:
+        if not encrypted_regex:
+            encrypted_regex = branch.get('sops', {}).get('encrypted_regex')
+        if not ignore_mac:
+            digest = hashlib.sha512()
     carryaad = aad
     for k, v in branch.items():
-        if k == 'sops' and isRoot:
+        if k == 'sops' and is_root:
             continue  # everything under the `sops` key stays in clear
+
         unencrypted_branch = unencrypted or k.endswith(SOPS_UNENCRYPTED_SUFFIX)
+
         nstash = dict()
         caad = aad
         if _a_is_newer_than_b(SOPS_INPUT_VERSION, '0.9'):
@@ -128,21 +133,24 @@ def _walk_and_decrypt(branch, key, aad=b'', stash=None, digest=None,
             nstash = stash[k]
         if isinstance(v, MutableMapping):
             branch[k] = _walk_and_decrypt(v, key, aad=caad, stash=nstash,
-                                          digest=digest, isRoot=False,
-                                          unencrypted=unencrypted_branch)
+                                          digest=digest, is_root=False,
+                                          unencrypted=unencrypted_branch,
+                                          encrypted_regex=encrypted_regex)
         elif isinstance(v, MutableSequence):
             branch[k] = _walk_list_and_decrypt(v, key, aad=caad, stash=nstash,
                                                digest=digest,
-                                               unencrypted=unencrypted_branch)
+                                               unencrypted=unencrypted_branch,
+                                               encrypted_regex=encrypted_regex)
         elif isinstance(v, PreservedScalarString):
             ev = _decrypt(v, key, aad=caad, stash=nstash, digest=digest,
                           unencrypted=unencrypted_branch)
             branch[k] = PreservedScalarString(ev)
         else:
+            unencrypted_branch = unencrypted_branch or (encrypted_regex and not re.match(encrypted_regex, k))
             branch[k] = _decrypt(v, key, aad=caad, stash=nstash, digest=digest,
                                  unencrypted=unencrypted_branch)
 
-    if isRoot and not ignoreMac:
+    if is_root and not ignore_mac:
         # compute the hash computed on values with the one stored
         # in the file. If they match, all is well.
         if not ('mac' in branch['sops']):

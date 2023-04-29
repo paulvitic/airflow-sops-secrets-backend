@@ -11,10 +11,11 @@ backend = airflow_sops.secrets_backend.GcsSopsSecretsBackend
 backend_kwargs = {"project_id": "your-project-id"}
 ```
 Available parameters to backend_kwargs:
-* project_id: Optional. GCP project id where the GCS bucket which holds the encrypted connections/variables files reside., 
-* bucket_name: Optional. If not submitted tries retrieving from Composer GCS_BUCKET environment variable 
-* connections_prefix. Optional. Default is "sops/connections". The folder in GCS bucket that holds encrypted connections.
-* variables_prefix: Optional. Default is "sops/variables". The folder in GCS bucket that holds encrypted variables., 
+* project_id: Optional. GCP project id where the GCS bucket which holds the encrypted connections/variables files reside.
+* bucket_name: Optional. If not submitted tries retrieving from Composer GCS_BUCKET environment variable
+* root_folder_name: Optional. Default is "sops". The folder in GCS bucket that holds encrypted connections and variables.
+* connections_folder_name. Optional. Default is "connections". The folder in GCS bucket that holds encrypted connections.
+* variables_file_name: Optional. Default is "variables". The file in GCS bucket that holds variables.,
 * encrypted_file_ext: Optional. Default is "enc". The file extension for encrypted sops files. The format is <connection_id or variable_key>.<encrypted_file_ext>.yaml
 * ignore_mac: Optional. Default is True. Ignores file checksum when true.
 
