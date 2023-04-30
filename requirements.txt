@@ -4,4 +4,4 @@ apache-airflow==2.2.3
 google-cloud-kms==2.10.1
 google-cloud-storage==1.43.0
 ruamel.yaml==0.17.21
-markupsafe==2.0.1
+markupsafe>=2.0.1

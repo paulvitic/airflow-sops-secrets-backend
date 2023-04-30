@@ -14,7 +14,7 @@ class TestGcsSopsSecretsBackend(unittest.TestCase):
         from dotenv import load_dotenv
         load_dotenv(".env-test")
 
-    def test(self):
+    def test_gcp_conn(self):
         bucket_name = os.getenv("INTEGRATION_TEST_BUCKET_NAME")
         if not bucket_name:
             self.skipTest(Exception("integration test requires bucket name"))
@@ -34,6 +34,24 @@ class TestGcsSopsSecretsBackend(unittest.TestCase):
 
         var_val = manager.get_variable("invoice_gsheet_id")
         self.assertIsNotNone(var_val)
+
+    def test_personio(self):
+        bucket_name = os.getenv("INTEGRATION_TEST_BUCKET_NAME")
+        if not bucket_name:
+            self.skipTest(Exception("integration test requires bucket name"))
+
+        manager = GcsSopsSecretsBackend(bucket_name=bucket_name)
+        conn = manager.get_connection(conn_id="personio")
+        self.assertIsNotNone(conn)
+
+    def test_slack_channel(self):
+        bucket_name = os.getenv("INTEGRATION_TEST_BUCKET_NAME")
+        if not bucket_name:
+            self.skipTest(Exception("integration test requires bucket name"))
+
+        manager = GcsSopsSecretsBackend(bucket_name=bucket_name)
+        conn = manager.get_connection(conn_id="slack_channel")
+        self.assertIsNotNone(conn)
 
 
 if __name__ == '__main__':
